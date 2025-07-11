@@ -1,0 +1,90 @@
+Diagram:
+  DefinitionFiles:
+    - Type: URL
+      Url: "https://raw.githubusercontent.com/awslabs/diagram-as-code/main/definitions/definition-for-aws-icons-light.yaml"
+  Resources:
+    Canvas:
+      Type: AWS::Diagram::Canvas
+      Direction: horizontal
+      Children:
+        - User
+        - AWSCloud
+    User:
+      Type: AWS::Diagram::Resource
+      Preset: User
+    AWSCloud:
+      Type: AWS::Diagram::Cloud
+      Preset: AWSCloudNoLogo
+      Align: center
+      Children:
+        - MyVPC
+    MyVPC:
+      Type: AWS::EC2::VPC
+      Direction: horizontal
+      Children:
+        - ALB
+        - EC2Stack
+        - RDSStack
+      BorderChildren:
+        - Position: W
+          Resource: IGW
+    ALB:
+      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+      Preset: Application Load Balancer
+    EC2Stack:
+      Type: AWS::Diagram::VerticalStack
+      Children:
+        - PublicSubnet1
+        - PublicSubnet2
+    RDSStack:
+      Type: AWS::Diagram::VerticalStack
+      Children:
+        - PrivateSubnet1
+    PublicSubnet1:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Children:
+        - WebServer1
+    PublicSubnet2:
+      Type: AWS::EC2::Subnet
+      Preset: PublicSubnet
+      Children:
+        - WebServer2
+    PrivateSubnet1:
+      Type: AWS::EC2::Subnet
+      Preset: PrivateSubnet
+      Children:
+        - DatabaseServer1
+    WebServer1:
+      Type: AWS::EC2::Instance
+    WebServer2:
+      Type: AWS::EC2::Instance
+    DatabaseServer1:
+      Type: AWS::RDS::DBInstance
+    IGW:
+      Type: AWS::EC2::InternetGateway
+  Links:
+    - Source: User
+      SourcePosition: E
+      Target: IGW
+      TargetPosition: W
+    - Source: IGW
+      SourcePosition: E
+      Target: ALB
+      TargetPosition: W
+    - Source: ALB
+      SourcePosition: E
+      Target: WebServer1
+      TargetPosition: W
+    - Source: ALB
+      SourcePosition: E
+      Target: WebServer2
+      TargetPosition: W
+    - Source: WebServer1
+      SourcePosition: S
+      Target: DatabaseServer1
+      TargetPosition: N
+    - Source: WebServer2
+      SourcePosition: S
+      Target: DatabaseServer1
+      TargetPosition: N
